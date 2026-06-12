@@ -33,8 +33,8 @@ func Execute() error {
 func printUsage() {
 	fmt.Fprintf(os.Stderr, `zuzunza-haedoekgi — 플래시 아카이브·추출 CLI
 
-환경 변수:
-  ZUZUNZA_SERVGATE_URL  servgate 베이스 URL (예: https://www.zuzunza.com/xpi)
+환경 변수 (선택):
+  ZUZUNZA_SERVGATE_URL  servgate 베이스 URL (기본값: https://www.zuzunza.com/xpi)
 
 명령:
   haedoekgi search [--title T] [--author-id ID] [--nickname N] [-q QUERY]

@@ -2,3 +2,8 @@
 /haedoekgi
 /haedoekgi-*
 *.exe
+
+# GUI
+/gui/node_modules/
+/gui/dist/
+/gui/src-tauri/target/

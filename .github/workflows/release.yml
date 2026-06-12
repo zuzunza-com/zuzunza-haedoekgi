@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-cli:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -29,7 +29,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: '1.22'
-      - name: Build
+      - name: Build CLI
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
@@ -39,11 +39,36 @@ jobs:
           go build -ldflags="-s -w" -o "haedoekgi-${GOOS}-${GOARCH}${ext}" .
       - uses: actions/upload-artifact@v4
         with:
-          name: bin-${{ matrix.goos }}-${{ matrix.goarch }}
+          name: cli-${{ matrix.goos }}-${{ matrix.goarch }}
           path: haedoekgi-*
 
+  build-gui-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build Windows GUI
+        working-directory: gui
+        run: |
+          npm ci
+          npm run tauri build
+      - name: Collect GUI artifacts
+        shell: bash
+        run: |
+          mkdir -p dist-gui
+          cp gui/src-tauri/target/release/haedoekgi-gui.exe dist-gui/haedoekgi-gui-windows-amd64.exe
+          cp gui/src-tauri/target/release/bundle/nsis/*-setup.exe dist-gui/ 2>/dev/null || true
+          ls -la dist-gui/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gui-windows-amd64
+          path: dist-gui/*
+
   release:
-    needs: build
+    needs: [build-cli, build-gui-windows]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -51,8 +76,8 @@ jobs:
           path: dist
           merge-multiple: true
       - name: List artifacts
-        run: ls -la dist/
+        run: ls -laR dist/
       - uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          files: dist/*
+          files: dist/**

@@ -1,0 +1,29 @@
+[package]
+name = "haedoekgi-gui"
+version = "0.2.0"
+description = "ZUZUNZA 해독기 GUI"
+authors = ["zuzunza"]
+edition = "2021"
+
+[lib]
+name = "haedoekgi_gui_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", features = ["json", "stream"] }
+tokio = { version = "1", features = ["fs"] }
+futures-util = "0.3"
+dirs = "6"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+strip = true

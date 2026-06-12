@@ -1,13 +1,15 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-const EnvServgateURL = "ZUZUNZA_SERVGATE_URL"
+const (
+	EnvServgateURL     = "ZUZUNZA_SERVGATE_URL"
+	DefaultServgateURL = "https://www.zuzunza.com/xpi"
+)
 
 type Settings struct {
 	ServgateURL string
@@ -17,7 +19,7 @@ type Settings struct {
 func Load(outputFlag string) (Settings, error) {
 	base := strings.TrimSpace(os.Getenv(EnvServgateURL))
 	if base == "" {
-		return Settings{}, fmt.Errorf("%s 환경 변수가 필요합니다 (예: https://www.zuzunza.com/xpi)", EnvServgateURL)
+		base = DefaultServgateURL
 	}
 	base = strings.TrimRight(base, "/")
 
