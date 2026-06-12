@@ -1,6 +1,6 @@
 [package]
 name = "haedoekgi-gui"
-version = "0.2.3"
+version = "0.2.4"
 description = "ZUZUNZA 해독기 GUI"
 authors = ["zuzunza"]
 edition = "2021"

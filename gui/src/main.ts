@@ -5,10 +5,10 @@ import { open } from "@tauri-apps/plugin-dialog";
 interface SearchItem {
   id: string;
   title: string;
-  maker_id: string;
-  maker_display_name: string;
-  maker_nickname: string;
-  created_at: string;
+  makerId: string;
+  makerDisplayName: string;
+  makerNickname: string;
+  createdAt: string;
 }
 
 interface SearchResponse {
@@ -19,11 +19,11 @@ interface SearchResponse {
 }
 
 interface QuotaResponse {
-  download_count: number;
-  download_limit: number;
-  decrypt_count: number;
-  decrypt_limit: number;
-  bandwidth_limited: boolean;
+  downloadCount: number;
+  downloadLimit: number;
+  decryptCount: number;
+  decryptLimit: number;
+  bandwidthLimited: boolean;
 }
 
 interface DownloadProgress {
@@ -56,7 +56,13 @@ function formatDate(iso: string): string {
 }
 
 function authorName(item: SearchItem): string {
-  return item.maker_nickname || item.maker_display_name || item.maker_id;
+  return item.makerNickname || item.makerDisplayName || item.makerId || "";
+}
+
+function formatError(e: unknown): string {
+  if (typeof e === "string") return e;
+  if (e instanceof Error) return e.message;
+  return String(e);
 }
 
 function setStatus(msg: string, kind: "normal" | "error" | "success" = "normal") {
@@ -77,10 +83,10 @@ function setBusy(value: boolean) {
 async function refreshQuota() {
   try {
     const q = await invoke<QuotaResponse>("cmd_quota");
-    const limited = q.bandwidth_limited ? " · 대역폭 제한" : "";
+    const limited = q.bandwidthLimited ? " · 대역폭 제한" : "";
     document.getElementById("quota")!.innerHTML =
-      `다운로드 <strong>${q.download_count}/${q.download_limit}</strong>` +
-      ` · 해독 <strong>${q.decrypt_count}/${q.decrypt_limit}</strong>${limited}`;
+      `다운로드 <strong>${q.downloadCount}/${q.downloadLimit}</strong>` +
+      ` · 해독 <strong>${q.decryptCount}/${q.decryptLimit}</strong>${limited}`;
   } catch (e) {
     document.getElementById("quota")!.textContent = "할당량 조회 실패";
   }
@@ -114,7 +120,7 @@ async function doSearch(offset = 0) {
     setStatus(`총 ${resp.total}건`);
     await refreshQuota();
   } catch (e) {
-    setStatus(String(e), "error");
+    setStatus(formatError(e), "error");
   } finally {
     setBusy(false);
   }
@@ -144,7 +150,7 @@ function renderResults(resp: SearchResponse) {
       <td>${item.id}</td>
       <td>${escapeHtml(item.title)}</td>
       <td>${escapeHtml(authorName(item))}</td>
-      <td>${formatDate(item.created_at)}</td>
+      <td>${formatDate(item.createdAt)}</td>
       <td class="actions">
         <button class="secondary" data-action="download" data-id="${item.id}">다운로드</button>
         <button class="secondary" data-action="decrypt" data-id="${item.id}">해독</button>
@@ -174,8 +180,8 @@ function renderResults(resp: SearchResponse) {
   });
 }
 
-function escapeHtml(s: string): string {
-  return s
+function escapeHtml(s: string | null | undefined): string {
+  return String(s ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -204,7 +210,7 @@ async function doDownload(id: string) {
     setStatus(`다운로드 완료: ${path}`, "success");
     await refreshQuota();
   } catch (e) {
-    setStatus(String(e), "error");
+    setStatus(formatError(e), "error");
   } finally {
     showProgress(false);
     setBusy(false);
@@ -224,7 +230,7 @@ async function doDecrypt(id: string) {
     setStatus(`해독 완료: ${path}`, "success");
     await refreshQuota();
   } catch (e) {
-    setStatus(String(e), "error");
+    setStatus(formatError(e), "error");
   } finally {
     setBusy(false);
   }
