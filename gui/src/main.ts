@@ -111,7 +111,7 @@ async function doSearch(offset = 0) {
     const resp = await invoke<SearchResponse>("cmd_search", {
       q: q || null,
       title: title || null,
-      maker_id: makerId || null,
+      makerId: makerId || null,
       nickname: nickname || null,
       limit: pageSize,
       offset,
@@ -206,7 +206,7 @@ async function doDownload(id: string) {
   showProgress(true, id);
 
   try {
-    const path = await invoke<string>("cmd_download", { id, output_dir: outputDir });
+    const path = await invoke<string>("cmd_download", { id, outputDir: outputDir });
     setStatus(`다운로드 완료: ${path}`, "success");
     await refreshQuota();
   } catch (e) {
@@ -226,7 +226,7 @@ async function doDecrypt(id: string) {
   setStatus(`해독 중: ${id}…`);
 
   try {
-    const path = await invoke<string>("cmd_decrypt", { id, output_dir: outputDir });
+    const path = await invoke<string>("cmd_decrypt", { id, outputDir: outputDir });
     setStatus(`해독 완료: ${path}`, "success");
     await refreshQuota();
   } catch (e) {
