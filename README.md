@@ -22,7 +22,7 @@ Windows에서는 GUI 버전을 사용할 수 있습니다. 환경 변수 설정 
 | 파일 | 설명 |
 |------|------|
 | `haedoekgi-gui-windows-amd64.exe` | GUI 실행 파일 |
-| `해독기_*_x64-setup.exe` | NSIS 설치 프로그램 (릴리스에 포함 시) |
+| `haedoekgi-gui-windows-amd64-setup.exe` | NSIS 설치 프로그램 |
 
 ### GUI 기능
 

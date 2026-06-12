@@ -60,7 +60,10 @@ jobs:
         run: |
           mkdir -p dist-gui
           cp gui/src-tauri/target/release/haedoekgi-gui.exe dist-gui/haedoekgi-gui-windows-amd64.exe
-          cp gui/src-tauri/target/release/bundle/nsis/*-setup.exe dist-gui/ 2>/dev/null || true
+          setup=$(ls gui/src-tauri/target/release/bundle/nsis/*-setup.exe 2>/dev/null | head -1)
+          if [ -n "$setup" ]; then
+            cp "$setup" dist-gui/haedoekgi-gui-windows-amd64-setup.exe
+          fi
           ls -la dist-gui/
       - uses: actions/upload-artifact@v4
         with:
