@@ -55,6 +55,16 @@ jobs:
         run: |
           npm ci
           npm run tauri build
+      - name: Verify frontend uses relative asset paths
+        working-directory: gui
+        shell: bash
+        run: |
+          if grep -Eq 'src="/assets/|href="/assets/' dist/index.html; then
+            echo "dist/index.html still uses absolute /assets paths"
+            cat dist/index.html
+            exit 1
+          fi
+
       - name: Collect GUI artifacts
         shell: bash
         run: |
